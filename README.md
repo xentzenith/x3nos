@@ -21,7 +21,7 @@
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/x3nos.git
+   git clone https://github.com/xentzenith/x3nos.git
    cd x3nos
    ```
 
