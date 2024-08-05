@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X3NOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #003399;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .digital-clock {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            background: #000000;
+            color: #00ff00;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .loading-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #000000;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #00ff00, #035d03);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #00ff00;
+            position: absolute;
+            top: 0;
+            left: -100%;
+            animation: floatldbar 2s linear infinite;
+        }
+
+        @keyframes floatldbar {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: -100%; }
+        }
+
+        .attribution {
+            text-align: center;
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .attribution a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+        .attribution a:hover {
+            text-decoration: underline;
+        }
+
+        .x3nos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .x3nos img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .x3nos p {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .login-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            animation: fadeIn 1s ease;
+            z-index: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .login-screen h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .login-screen p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #00cc00;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #009900;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .somebuttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2; 
+        }
+
+        .power-off-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50%;
+            background: #ff0000;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .power-off-dialog {
+            display: none;
+            position: absolute;
+            bottom: 60px; 
+            right: 0;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 3;
+            animation: float 1s linear 1;
+        }
+
+        @keyframes float {
+            0% { right: -100%; }
+            50% { right: 100%; }
+            100% { right: 0; }
+        }
+
+        .power-off-dialog p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .power-off-yes, .power-off-no {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .power-off-yes {
+            background: #ff0000;
+            color: #ffffff;
+        }
+
+        .power-off-yes:hover {
+            background: #cc0000;
+        }
+
+        .power-off-no {
+            background: #00cc00;
+            color: #ffffff;
+        }
+
+        .power-off-no:hover {
+            background: #009900;
+        }
+
+        .shutdown-glitch-effect {
+            visibility: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #000000;
+            animation: glitch 1s infinite;
+            z-index: 4;
+        }
+
+        @keyframes glitch {
+            0% { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
+            25% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            50% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            75% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="digital-clock" id="digitalClock"></div>
+
+    <div class="loading-screen">
+        <div class="loading-bar"></div>
+        <div class="attribution">
+            <div class="x3nos">
+                <img src="https://raw.githubusercontent.com/xentzenith/x3nos/master/logo.png" alt="x3nos">
+                <p>X3NOS</p>
+            </div>
+            <p>Year 2024</p>
+            <p>by Ilker aka <a href="https://github.com/xentzenith" target="_blank">github/@xentzenith</a></p>
+            <p><a href="http://www.theilker.com" target="_blank">www.theilker.com</a></p>
+        </div>
+    </div>
+
+    <div class="shutdown-glitch-effect"></div>
+
+    <div class="login-screen">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your account</p>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Log In</button>
+            <div class="error-message" id="errorMessage"></div>
+        </form>
+        <div class="somebuttons">
+            <button class="power-off-button" onclick="powerOff()"><i class="fas fa-power-off"></i></button>
+            <div class="power-off-dialog">
+                <p>Do you want to turn off your computer?</p>
+                <button class="power-off-yes" onclick="powerOffYes()">Yes</button>
+                <button class="power-off-no" onclick="powerOffNo()">No</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', () => {
+            const randomTime = Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
+            
+            setTimeout(() => {
+                document.querySelector('.loading-screen').style.display = 'none';
+                document.querySelector('.login-screen').style.display = 'flex';
+            }, randomTime);
+
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const date = now.toDateString();
+
+            document.getElementById('digitalClock').textContent = `${hours}:${minutes}:${seconds} ${date}`;
+        }
+
+        function powerOff() {
+            const dialog = document.querySelector('.power-off-dialog');
+            
+            if (dialog.style.display === 'block') {
+                dialog.style.display = 'none';
+            } else {
+                dialog.style.display = 'block';
+            }
+        }
+
+        function closeDialog() {
+            const dialog = document.querySelector('.power-off-dialog');
+            dialog.style.display = 'none'; 
+        }
+
+        function powerOffYes() {
+            closeDialog(); 
+
+            document.querySelectorAll('body > *:not(.shutdown-glitch-effect)').forEach(element => {
+                element.style.display = 'none';
+                document.body.style.backgroundColor = 'transparent';
+            });
+
+            document.querySelector('.shutdown-glitch-effect').style.visibility = 'visible';
+            
+            setTimeout(() => {
+                window.location.href = '/poweroff.html';
+            }, 3000);
+        }
+
+        function powerOffNo() {
+            closeDialog(); 
+        }
+
+        document.addEventListener('click', function(event) {
+            const dialog = document.querySelector('.power-off-dialog');
+            const button = document.querySelector('.power-off-button');
+            
+            if (!dialog.contains(event.target) && !button.contains(event.target)) {
+                closeDialog();
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (username === 'admin' && password === 'demo') {
+                window.location.href = '/loggedon.html';
+            } else {
+                errorMessage.textContent = 'Invalid username or password.';
+                document.querySelector('.login-screen').classList.add('shake');
+
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+
+                setTimeout(() => {
+                    document.querySelector('.login-screen').classList.remove('shake');
+                }, 500);
+
+                errorMessage.textContent = 'Invalid username or password.'
+            }
+        });
+    </script>
+</body>
+</html>
