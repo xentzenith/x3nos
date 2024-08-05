@@ -97,7 +97,10 @@
     </div>
     <script>
         function powerOn() {
-            window.location.href = '/';
+            var previousURL = document.referrer;
+            
+            //redirect to previous page
+            window.location.href = previousURL;
         }
 
         setTimeout(() => {
