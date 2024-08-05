@@ -373,7 +373,8 @@
             document.querySelector('.shutdown-glitch-effect').style.visibility = 'visible';
             
             setTimeout(() => {
-                window.location.href = '/poweroff.html';
+                var url = window.location.href;
+                window.location.href = url + 'poweroff.html';
             }, 3000);
         }
 
@@ -399,7 +400,9 @@
             const errorMessage = document.getElementById('errorMessage');
 
             if (username === 'admin' && password === 'demo') {
-                window.location.href = '/loggedon.html';
+                //current url fix for github pages
+                var url = window.location.href;
+                window.location.href = url + 'loggedon.html';
             } else {
                 errorMessage.textContent = 'Invalid username or password.';
                 document.querySelector('.login-screen').classList.add('shake');
