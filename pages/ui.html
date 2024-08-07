@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X3NOS UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #00ff00;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .brightness-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        .startup-sound {
+            display: none;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #626161;
+            color: #00ff00;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 -2px 5px rgba(0, 255, 0, 0.5);
+            animation: slideUp 1s ease-out;
+            z-index: 3; 
+        }
+
+        .taskbar .time {
+            font-size: 18px;
+        }
+
+        .taskbar .icons {
+            padding-right: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .taskbar .icons button {
+            background: none;
+            border: none;
+            color: #00ff00;
+            font-size: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .taskbar .icons button:hover {
+            color: #00cc00;
+        }
+
+        .display-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 40px;
+            right: 0;
+            background-color: #000000;
+            color: #00ff00;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            z-index: 2;
+        }
+
+        .settings-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #000000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            z-index: 4;
+            width: 300px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .settings-dialog input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .settings-dialog label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .settings-dialog button {
+            background: #00cc00;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .settings-dialog button:hover {
+            background: #009900;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <audio class="startup-sound" autoplay>
+        <source src="https://raw.githubusercontent.com/xentzenith/x3nos/master/assets/start-computeraif-14572.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="brightness-overlay" id="brightnessOverlay"></div>
+
+    <div class="taskbar">
+        <div class="time" id="taskbarTime"></div>
+        <div class="icons">
+            <!--<button id="startupMenu"><i class="fas fa-tachometer-alt"></i></button> SOON-->
+            <button id="settings"><i class="fas fa-cogs"></i></button>
+        </div>
+    </div>
+
+    <div class="display-area" id="displayArea"></div>
+
+    <div class="settings-dialog" id="settingsDialog">
+        <h2>Settings</h2>
+        <label for="brightness">Brightness:</label>
+        <input type="range" id="brightness" min="15" max="100" value="50">
+        <label for="volume">Sound Volume:</label>
+        <input type="range" id="volume" min="0" max="100" value="50">
+        <button id="closeSettings">Close</button>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('taskbarTime').textContent = timeString;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime(); 
+
+        const settingsButton = document.getElementById('settings');
+        const settingsDialog = document.getElementById('settingsDialog');
+        const closeSettingsButton = document.getElementById('closeSettings');
+
+        settingsButton.addEventListener('click', () => {
+            settingsDialog.style.display = 'block';
+        });
+
+        closeSettingsButton.addEventListener('click', () => {
+            settingsDialog.style.display = 'none';
+        });
+
+        window.addEventListener('load', () => {
+            document.querySelector('.startup-sound').play();
+        });
+
+        const brightnessSlider = document.getElementById('brightness');
+        const brightnessOverlay = document.getElementById('brightnessOverlay');
+
+        brightnessSlider.addEventListener('input', () => {
+            const brightness = brightnessSlider.value;
+            brightnessOverlay.style.backgroundColor = `rgba(0, 0, 0, ${1 - brightness / 100})`;
+        });
+
+        const volumeSlider = document.getElementById('volume');
+        let soundPreview = new Audio('https://raw.githubusercontent.com/xentzenith/x3nos/master/assets/soundpop.mp3');
+
+        volumeSlider.addEventListener('input', () => {
+            const volume = volumeSlider.value / 100;
+            soundPreview.volume = volume;
+            soundPreview.currentTime = 0;
+            soundPreview.play();
+        });
+    </script>
+</body>
+</html>

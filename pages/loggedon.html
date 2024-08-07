@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X3NOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #00ff00, #035d03);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #00ff00;
+            position: absolute;
+            top: 0;
+            left: -100%;
+            animation: floatldbar 2s linear infinite;
+        }
+
+        @keyframes floatldbar {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: -100%; }
+        }
+
+        .shell-box {
+            width: 80%;
+            max-width: 600px;
+            height: 300px;
+            background-color: #000000;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            overflow-y: auto;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            animation: ease-out 1.5s;
+        }
+
+        .shell-box p {
+            margin: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    <div class="shell-box" id="shellBox"></div>
+
+    <script>
+        const messages = [
+            {message: 'Loading necessary libraries...', color: '#00ff00', timeoutForNextMessage: 2000},
+            {message: 'explorer.module.x3n', color: '#00ff00', timeoutForNextMessage: 3000},
+            {message: 'Initializing system components...', color: '#00ff00', timeoutForNextMessage: 4000},
+            {message: 'System check complete.', color: '#00ff00', timeoutForNextMessage: 5000}
+        ];
+
+        function displayMessages(messages) {
+            const shellBox = document.getElementById('shellBox');
+            let delay = 0;
+
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.textContent = msg.message;
+                    p.style.color = msg.color;
+                    shellBox.appendChild(p);
+
+                    if (index === messages.length - 1) {
+                        setTimeout(() => {
+                            shellBox.classList.add('hidden');
+
+                            setTimeout(() => {
+                                window.location.href = '/pages/ui.html';
+                            }, 3000);
+                        }, msg.timeoutForNextMessage);
+                    }
+                }, delay);
+                delay += msg.timeoutForNextMessage;
+            });
+        }
+
+        window.addEventListener('load', () => {
+            displayMessages(messages);
+        });
+    </script>
+</body>
+</html>

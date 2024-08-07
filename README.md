@@ -37,3 +37,10 @@ This project is licensed under the MIT License - visit the LICENSE file for deta
 
 ## Contact
 For any questions or feedback, you can reach out via GitHub Issues or email (contact@theilker.com)
+
+## Changelog
+
+### 2024-08-06 (Day 2)
+- Added brightness adjustment with full-screen overlay.
+- Implemented volume preview feature in settings dialog.
+- Improved CSS to prevent layout shifting during brightness changes.
