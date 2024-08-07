@@ -2,6 +2,11 @@
 
 **X3NOS** is a web application designed to mimic the aesthetic and functionality of an old-school operating system with a modern twist. The project features a dynamic loading screen, digital clock, and login interface, and includes interactive elements such as power-off dialogs and glitch effects.
 
+## See Deployed Version
+[View Live](https://x3nos.theilker.com)
+User Credentials: username -- admin, password -- demo
+I hope you star the project if you like it ;)
+
 ## Features
 
 - **Loading Screen**: Displays a customizable loading bar and a placeholder message.
