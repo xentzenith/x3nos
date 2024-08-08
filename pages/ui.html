@@ -13,7 +13,6 @@
         }
 
         body {
-            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #000000;
             color: #00ff00;
@@ -49,13 +48,13 @@
             align-items: center;
             padding: 0 10px;
             box-shadow: 0 -2px 5px rgba(0, 255, 0, 0.5);
-            animation: slideUp 1s ease-out;
-            z-index: 3; 
+            z-index: 3;
         }
 
         .taskbar .time {
             font-size: 18px;
             cursor: pointer;
+            margin-right: 10px;
         }
 
         .taskbar .icons {
@@ -110,7 +109,6 @@
             z-index: 4;
             width: 300px;
             text-align: center;
-            animation: fadeIn 1s ease-out;
         }
 
         .settings-dialog input[type="range"] {
@@ -156,6 +154,7 @@
         .calendar-dialog table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
 
         .calendar-dialog table, th, td {
@@ -171,14 +170,35 @@
             background-color: #626161;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+        .calendar-dialog .current-date {
+            background-color: #00ff00;
+            color: #000000;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .calendar-dialog .navigation-buttons {
+            margin-top: 10px;
+        }
+
+        .calendar-dialog .navigation-buttons button {
+            background: #00cc00;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .calendar-dialog .navigation-buttons button:hover {
+            background: #009900;
+        }
+
+        #prevYear, #nextYear {
+            background: #1a3608;
+        }
+
+        .current-month {
+            color: #8eac06;
         }
     </style>
 </head>
@@ -209,11 +229,21 @@
     </div>
 
     <div class="calendar-dialog" id="calendarDialog">
-        <h2>Current Month</h2>
+        <h2 id="calendarTitle">Current Month</h2>
         <div id="calendarContent"></div>
+        <div class="navigation-buttons">
+            <button id="prevYear">&laquo; Previous Year</button>
+            <button id="nextYear">Next Year &raquo;</button>
+            <button id="prevMonth">&lsaquo; Previous Month</button>
+            <button id="nextMonth">Next Month &rsaquo;</button>
+        </div>
     </div>
 
     <script>
+        // Initialize calendar variables
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -224,38 +254,16 @@
         }
 
         setInterval(updateTime, 1000);
-        updateTime(); 
+        updateTime();
 
-        const settingsButton = document.getElementById('settings');
-        const settingsDialog = document.getElementById('settingsDialog');
-        const closeSettingsButton = document.getElementById('closeSettings');
-
-        settingsButton.addEventListener('click', () => {
-            settingsDialog.style.display = 'block';
-        });
-
-        closeSettingsButton.addEventListener('click', () => {
-            settingsDialog.style.display = 'none';
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === settingsDialog) return;
-            if (!settingsDialog.contains(event.target) && event.target !== settingsButton) {
-                settingsDialog.style.display = 'none';
-            }
-        });
-
-        const timeElement = document.getElementById('taskbarTime');
-        const calendarDialog = document.getElementById('calendarDialog');
-        const calendarContent = document.getElementById('calendarContent');
-
-        timeElement.addEventListener('click', () => {
+        function generateCalendar(year, month) {
             const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
+            const today = now.getDate();
+            const thisMonth = now.getMonth();
+            const thisYear = now.getFullYear();
+
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDay = new Date(year, month, 1).getDay();
-
             let calendarHTML = '<table><thead><tr>';
             calendarHTML += '<th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>';
             calendarHTML += '</tr></thead><tbody><tr>';
@@ -265,7 +273,11 @@
             }
 
             for (let day = 1; day <= daysInMonth; day++) {
-                calendarHTML += `<td>${day}</td>`;
+                if (year === thisYear && month === thisMonth && day === today) {
+                    calendarHTML += `<td class="current-date">${day}</td>`;
+                } else {
+                    calendarHTML += `<td>${day}</td>`;
+                }
                 if ((firstDay + day) % 7 === 0) {
                     calendarHTML += '</tr><tr>';
                 }
@@ -276,7 +288,72 @@
             }
 
             calendarHTML += '</tbody></table>';
-            calendarContent.innerHTML = calendarHTML;
+
+            let calendarTitle = `${year} - ${new Date(year, month).toLocaleString('default', { month: 'long' })}`;
+            if (year === thisYear && month === thisMonth) {
+                document.getElementById('calendarTitle').classList.add('current-month');
+            }
+
+            document.getElementById('calendarTitle').textContent = calendarTitle;
+            document.getElementById('calendarContent').innerHTML = calendarHTML;
+        }
+
+        // Initial calendar generation
+        generateCalendar(currentYear, currentMonth);
+
+        // Event listeners for month/year navigation
+        document.getElementById('prevYear').addEventListener('click', () => {
+            currentYear--;
+            generateCalendar(currentYear, currentMonth);
+        });
+
+        document.getElementById('nextYear').addEventListener('click', () => {
+            currentYear++;
+            generateCalendar(currentYear, currentMonth);
+        });
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar(currentYear, currentMonth);
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar(currentYear, currentMonth);
+        });
+
+        const settingsButton = document.getElementById('settings');
+        const settingsDialog = document.getElementById('settingsDialog');
+        const closeSettingsButton = document.getElementById('closeSettings');
+
+        settingsButton.addEventListener('click', (event) => {
+            event.stopPropagation();  // Stop the event from propagating to the window
+            settingsDialog.style.display = 'block';
+        });
+
+        closeSettingsButton.addEventListener('click', () => {
+            settingsDialog.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (!settingsDialog.contains(event.target) && event.target !== settingsButton) {
+                settingsDialog.style.display = 'none';
+            }
+        });
+
+
+        const timeElement = document.getElementById('taskbarTime');
+        const calendarDialog = document.getElementById('calendarDialog');
+
+        timeElement.addEventListener('click', () => {
             calendarDialog.style.display = 'block';
         });
 
